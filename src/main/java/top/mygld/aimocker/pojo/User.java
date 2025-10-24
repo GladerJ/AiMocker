@@ -1,20 +1,25 @@
 package top.mygld.aimocker.pojo;
 
+/**
+ * 测试 Pojo
+ */
 public class User {
 
     private String name;
     private int age;
     private String email;
     private String city;
+    private BackPack backPack;
 
-    public User() {
+    public BackPack getBackPack() {
+        return backPack;
     }
 
-    public User(String name, int age, String email, String city) {
-        this.name = name;
-        this.age = age;
-        this.email = email;
-        this.city = city;
+    public void setBackPack(BackPack backPack) {
+        this.backPack = backPack;
+    }
+
+    public User() {
     }
 
     // ----------- Getter & Setter -----------
@@ -53,6 +58,7 @@ public class User {
 
     // ----------- toString -----------
 
+
     @Override
     public String toString() {
         return "User{" +
@@ -60,6 +66,7 @@ public class User {
                 ", age=" + age +
                 ", email='" + email + '\'' +
                 ", city='" + city + '\'' +
+                ", backPack=" + backPack +
                 '}';
     }
 }

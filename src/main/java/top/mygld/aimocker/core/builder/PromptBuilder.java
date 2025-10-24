@@ -1,4 +1,4 @@
-package top.mygld.aimocker.internal;
+package top.mygld.aimocker.core.builder;
 
 import java.lang.reflect.Field;
 

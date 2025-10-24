@@ -1,4 +1,6 @@
-package top.mygld.aimocker.spi;
+package top.mygld.aimocker.adapter.impl;
+
+import java.util.concurrent.CompletableFuture;
 
 /**
  * Service Provider Interface (SPI) for language model communication.
@@ -10,5 +12,5 @@ public interface LanguageModelAdapter {
      * @param prompt The complete prompt to send to the AI model.
      * @return The raw string response from the model, expected to be a JSON object.
      */
-    String generate(String prompt);
+    CompletableFuture<String> generateAsync(String prompt);
 }

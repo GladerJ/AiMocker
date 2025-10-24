@@ -1,6 +1,6 @@
-package top.mygld.aimocker.internal;
+package top.mygld.aimocker.core;
 
-import top.mygld.aimocker.spi.LanguageModelAdapter;
+import top.mygld.aimocker.adapter.impl.LanguageModelAdapter;
 
 import java.util.ServiceLoader;
 

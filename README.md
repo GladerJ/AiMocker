@@ -117,7 +117,7 @@ public class MyCustomAdapter implements LanguageModelAdapter {
 在项目的 `src/main/resources/META-INF/services/` 目录下创建文件：
 
 ```
-top.mygld.aimocker.spi.LanguageModelAdapter
+top.mygld.aimocker.adapter.impl.LanguageModelAdapter
 ```
 
 文件内容填写自定义实现类的全路径，例如：
@@ -158,6 +158,11 @@ class DemoApplicationTests {
     void test4(@AiMock("随机生成所有成员，每一个数据都不能为空，必须符合规范") User user){
         System.out.println(user);
     }
+
+    @Test
+    void testListAiMockUser(@AiMock(value = "数据自拟，答案随机一点，不要固定，都不能为空",count = 5) List<User> users) {
+        System.out.println(users);
+    }
 }
 ```
 
@@ -165,5 +170,4 @@ class DemoApplicationTests {
 
 <img src="https://images.mygld.top/file/1761234782648_image.png" alt="image.png" width=100% />
 
-本框架下一步要实现的目标：支持生成集合数据，如 `List` 等。
 
