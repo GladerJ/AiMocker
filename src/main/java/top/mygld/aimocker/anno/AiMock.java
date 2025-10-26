@@ -1,54 +1,60 @@
 package top.mygld.aimocker.anno;
 
-import top.mygld.aimocker.enums.MockType;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Annotation for generating AI mock data for a method parameter.
- * <p>
- * Can generate single objects, collections, or arrays according to {@link MockType}.
- * </p>
+ * Annotation to generate AI-powered mock data for test parameters and fields.
+ *
+ * <p>Supports:</p>
+ * <ul>
+ *   <li>Single objects</li>
+ *   <li>Collections (List, Set)</li>
+ *   <li>Arrays</li>
+ *   <li>Test method parameters</li>
+ *   <li>Test class fields</li>
+ * </ul>
+ *
+ * <h2>Example Usage:</h2>
+ * <pre>{@code
+ * @AiMockTest
+ * class UserTest {
+ *     // Field injection
+ *     @AiMock("Generate active user")
+ *     private User user;
+ *
+ *     @AiMock(value = "Generate premium users", count = 5)
+ *     private List<User> users;
+ *
+ *     // Parameter injection
+ *     @Test
+ *     void test(@AiMock("Generate admin user") User admin) {
+ *         // ...
+ *     }
+ * }
+ * }</pre>
+ * @Author
+ *  Glader
+ * @Since 1.0
  */
-@Target(ElementType.PARAMETER)
+@Target({ElementType.PARAMETER, ElementType.FIELD})  // 关键：必须包含 FIELD
 @Retention(RetentionPolicy.RUNTIME)
 public @interface AiMock {
 
     /**
-     * The natural language description of the mock data scenario.
-     * Used by the AI generator to guide the mock data creation.
+     * Scenario or description for AI to generate mock data.
      *
      * @return the scenario description
      */
-    String value();
+    String value() default "";
 
     /**
-     * The number of mock items to generate.
-     * Default is 1 (single object).
-     * If the parameter type is a collection or array, this determines the number of elements.
+     * Number of items to generate for collections or arrays.
+     * Ignored for single object parameters.
      *
-     * @return number of items to generate
+     * @return the count, default is 1
      */
     int count() default 1;
-
-    /**
-     * The mode of mock generation.
-     * <ul>
-     *     <li>SINGLE: generate a single object</li>
-     *     <li>COLLECTION: generate a collection of objects</li>
-     *     <li>ARRAY: generate an array of objects</li>
-     * </ul>
-     *
-     * @return the mock generation type
-     */
-    MockType type() default MockType.SINGLE;
-
-    /**
-     * Whether null values are allowed in the generated mock data.
-     *
-     * @return true if null values are allowed, false otherwise
-     */
-    boolean allowNull() default false;
 }

@@ -148,11 +148,11 @@ public class User {
 }
 ```
 
-接下来在测试类中添加注解 `@ExtendWith(AiMockerExtension.class)`，并在为生成 `Mock` 数据的对象添加 `@AiMock` 注解：
+接下来在测试类中添加注解 `@ExtendWith(AiMockParameterResolver.class)`，并在为生成 `Mock` 数据的对象添加 `@AiMock` 注解：
 
 ```java
 @SpringBootTest
-@ExtendWith(AiMockerExtension.class)
+@ExtendWith(AiMockParameterResolver.class)
 class DemoApplicationTests {
     @Test
     void test4(@AiMock("随机生成所有成员，每一个数据都不能为空，必须符合规范") User user){
@@ -170,4 +170,4 @@ class DemoApplicationTests {
 
 <img src="https://images.mygld.top/file/1761234782648_image.png" alt="image.png" width=100% />
 
-
+!<img src="https://images.mygld.top/file/1761318740573_image.png" alt="image.png" width=100% />
