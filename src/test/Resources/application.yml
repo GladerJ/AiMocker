@@ -1,0 +1,7 @@
+aimocker:
+  llm:
+    api-key: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    api-url: https://api.siliconflow.cn/v1/chat/completions
+    model: Qwen/Qwen2.5-7B-Instruct
+    temperature: 1.0
+    max-tokens: 2000

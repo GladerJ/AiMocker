@@ -1,5 +1,7 @@
 package top.mygld.aimocker.anno;
 
+import top.mygld.aimocker.enums.CacheStrategy;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -39,7 +41,7 @@ import java.lang.annotation.Target;
  *  Glader
  * @Since 1.0
  */
-@Target({ElementType.PARAMETER, ElementType.FIELD})  // 关键：必须包含 FIELD
+@Target({ElementType.PARAMETER, ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface AiMock {
 
@@ -57,4 +59,27 @@ public @interface AiMock {
      * @return the count, default is 1
      */
     int count() default 1;
+
+
+    /**
+     * Cache Strategy for this framework.
+     *
+     * @return the cache strategy, default is AUTO.
+     */
+    CacheStrategy cache() default CacheStrategy.AUTO;
+
+    /**
+     * The seed for random.
+     *
+     * @return default is -1, the real random.
+     */
+    long seed() default -1;
+
+    /**
+     * Cache time.
+     *
+     * @return default is 86400.
+     */
+
+    long ttl() default 86400;
 }

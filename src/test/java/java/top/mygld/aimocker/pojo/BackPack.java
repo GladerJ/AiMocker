@@ -1,7 +1,7 @@
 package top.mygld.aimocker.pojo;
 
 /**
- * 测试 Pojo
+ * Test Pojo
  */
 public class BackPack {
     private int weight;

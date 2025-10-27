@@ -1,12 +1,15 @@
 package top.mygld.aimocker.core.builder;
 
 import java.lang.reflect.Field;
+import java.util.Collection;
 
 public class PromptBuilder {
 
     public static <T> String build(Class<T> targetClass, String scenario) {
         StringBuilder fieldsList = new StringBuilder();
         buildFields(targetClass, fieldsList, 0);
+
+        // System.out.println(fieldsList.toString());
 
         return "You are an expert Java JSON data generator.\n" +
                 "Generate a single, valid JSON object representing an instance of the '" + targetClass.getSimpleName() + "' class.\n\n" +
@@ -18,7 +21,8 @@ public class PromptBuilder {
                 "- The output MUST be only the JSON object, without any extra text or markdown.\n" +
                 "- All field names in the JSON must exactly match the Java class fields listed above.\n" +
                 "- Provide realistic and contextually appropriate values based on the scenario.\n" +
-                "- All fields must be present in the output, even if the value is null or empty.\n\n" +
+                "- All fields must be present in the output, even if the value is null or empty.\n" +
+                "- Do NOT include unescaped newline or control characters in string values. All strings must be single-line and valid JSON strings.\n\n" +
                 "Generate the JSON object now.";
     }
 
@@ -34,7 +38,7 @@ public class PromptBuilder {
             } else {
                 builder.append(prefix).append("- ").append(field.getName())
                         .append(" (").append(type.getSimpleName()).append(")\n");
-                buildFields(type, builder, indent + 1);
+                if(!Collection.class.isAssignableFrom(type)) buildFields(type, builder, indent + 1);
             }
         }
     }

@@ -1,7 +1,9 @@
 package top.mygld.aimocker.pojo;
 
+import java.util.ArrayList;
+
 /**
- * 测试 Pojo
+ * Test Pojo
  */
 public class User {
 
@@ -9,13 +11,22 @@ public class User {
     private int age;
     private String email;
     private String city;
-    private BackPack backPack;
+    private top.mygld.aimocker.pojo.BackPack backPack;
+    private ArrayList<String> nickname;
 
-    public BackPack getBackPack() {
+    public ArrayList<String> getNickname() {
+        return nickname;
+    }
+
+    public void setNickname(ArrayList<String> nickname) {
+        this.nickname = nickname;
+    }
+
+    public top.mygld.aimocker.pojo.BackPack getBackPack() {
         return backPack;
     }
 
-    public void setBackPack(BackPack backPack) {
+    public void setBackPack(top.mygld.aimocker.pojo.BackPack backPack) {
         this.backPack = backPack;
     }
 
@@ -67,6 +78,7 @@ public class User {
                 ", email='" + email + '\'' +
                 ", city='" + city + '\'' +
                 ", backPack=" + backPack +
+                ", nickname=" + nickname +
                 '}';
     }
 }

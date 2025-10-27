@@ -5,6 +5,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import top.mygld.aimocker.core.builder.PromptBuilder;
 import top.mygld.aimocker.core.ServiceLocator;
 import top.mygld.aimocker.adapter.impl.LanguageModelAdapter;
+import top.mygld.aimocker.util.JsonUtil;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -14,13 +15,6 @@ import java.util.concurrent.CompletableFuture;
 public final class AiMocker {
 
     private static final LanguageModelAdapter ADAPTER = ServiceLocator.loadAdapter();
-    private static final ObjectMapper OBJECT_MAPPER = createObjectMapper();
-
-    private static ObjectMapper createObjectMapper() {
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.registerModule(new JavaTimeModule());
-        return mapper;
-    }
 
     private AiMocker() {}
 
@@ -35,8 +29,11 @@ public final class AiMocker {
         String prompt = PromptBuilder.build(targetClass, scenario);
         return ADAPTER.generateAsync(prompt)
                 .thenApply(jsonResponse -> {
+                    if (jsonResponse.startsWith("```")){
+                        jsonResponse = jsonResponse.substring(7,jsonResponse.length()-3);
+                    }
                     try {
-                        return OBJECT_MAPPER.readValue(jsonResponse, targetClass);
+                        return JsonUtil.fromJson(jsonResponse, targetClass);
                     } catch (Exception e) {
                         throw new RuntimeException(
                                 "AiMocker failed to deserialize AI response into " + targetClass.getName() +

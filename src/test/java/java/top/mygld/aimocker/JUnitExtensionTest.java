@@ -4,8 +4,9 @@ import org.junit.jupiter.api.Test;
 import top.mygld.aimocker.anno.AiMock;
 
 import top.mygld.aimocker.anno.AiMockTest;
-import top.mygld.aimocker.pojo.User;
 
+import top.mygld.aimocker.pojo.Animal;
+import top.mygld.aimocker.pojo.User;
 import java.util.Arrays;
 import java.util.List;
 
@@ -16,11 +17,14 @@ public class JUnitExtensionTest {
     @AiMock("Generate mock user data")
     private User user1;
 
+    @AiMock("Generate mock animal data")
+    private Animal animal;
+
 
 
     @Test
     void testParameterResolverExists() {
-        System.out.println(user1);
+        System.out.println(animal);
     }
 
     @Test

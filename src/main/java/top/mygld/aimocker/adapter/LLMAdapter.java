@@ -1,10 +1,12 @@
 package top.mygld.aimocker.adapter;
 
-import cn.hutool.core.io.resource.ResourceUtil;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import top.mygld.aimocker.adapter.impl.LanguageModelAdapter;
+import top.mygld.aimocker.exception.ConfigException;
+import top.mygld.aimocker.exception.GenerationException;
+import top.mygld.aimocker.util.ResourceUtil;
 
 import java.io.InputStream;
 import java.util.*;
@@ -72,35 +74,48 @@ public class LLMAdapter implements LanguageModelAdapter {
      */
     private Config loadConfig() {
         Config config = new Config();
-
         try {
-            // Try to load application.yml from classpath
-            // Will search both src/test/resources and src/main/resources
-            InputStream is = ResourceUtil.getStream("application.yml");
-            if (is == null) {
-                is = ResourceUtil.getStream("application.yaml");
+            Map<String, String> map = ResourceUtil.getProperties("application.properties");
+
+            if (map == null) {
+                map = ResourceUtil.getYaml("application.yml", "aimocker");
             }
 
-            if (is != null) {
-                ObjectMapper yamlMapper = new ObjectMapper(new YAMLFactory());
-                JsonNode root = yamlMapper.readTree(is);
+            if (map == null) {
+                map = ResourceUtil.getYaml("application.yaml", "aimocker");
+            }
 
-                // Parse aimocker.llm node
-                JsonNode aimockerNode = root.path("aimocker").path("llm");
-
-                if (!aimockerNode.isMissingNode()) {
-                    config.apiKey = getTextOrNull(aimockerNode, "api-key");
-                    config.apiUrl = getTextOrDefault(aimockerNode, "api-url", DEFAULT_API_URL);
-                    config.model = getTextOrDefault(aimockerNode, "model", DEFAULT_MODEL);
-                    config.temperature = getDoubleOrDefault(aimockerNode, "temperature", DEFAULT_TEMPERATURE);
-                    config.maxTokens = getIntegerOrNull(aimockerNode, "max-tokens");
+            String apiKey = map.get("aimocker.llm.api-key");
+            if (apiKey != null && !apiKey.trim().isEmpty()) {
+                config.apiKey = apiKey.trim();
+            }
+            String apiUrl = map.get("aimocker.llm.api-url");
+            if (apiUrl != null && !apiUrl.trim().isEmpty()) {
+                config.apiUrl = apiUrl.trim();
+            }
+            String model = map.get("aimocker.llm.model");
+            if (model != null && !model.trim().isEmpty()) {
+                config.model = model.trim();
+            }
+            String temperature = map.get("aimocker.llm.temperature");
+            if (temperature != null && !temperature.trim().isEmpty()) {
+                try {
+                    config.temperature = Double.parseDouble(temperature.trim());
+                } catch (NumberFormatException e) {
+                    throw new ConfigException("Invalid temperature value: " + temperature, e);
+                }
+            }
+            String maxTokens = map.get("aimocker.llm.max-tokens");
+            if (maxTokens != null && !maxTokens.trim().isEmpty()) {
+                try {
+                    config.maxTokens = Integer.parseInt(maxTokens.trim());
+                } catch (NumberFormatException e) {
+                    throw new ConfigException("Invalid max-tokens value in properties: " + maxTokens, e);
                 }
             }
         } catch (Exception e) {
-            // Config file loading failed, use default configuration
-            System.err.println("Warning: Failed to load application.yml, using default configuration: " + e.getMessage());
+            System.err.println("Warning: Failed to load configuration, using default configuration: " + e.getMessage());
         }
-
         return config;
     }
 
@@ -135,14 +150,14 @@ public class LLMAdapter implements LanguageModelAdapter {
             return HTTP_CLIENT.sendAsync(request, java.net.http.HttpResponse.BodyHandlers.ofString())
                     .thenApply(response -> {
                         if (response.statusCode() != 200) {
-                            throw new RuntimeException("LLM API error: " + response.statusCode()
+                            throw new GenerationException("LLM API error: " + response.statusCode()
                                     + " -> " + response.body());
                         }
                         try {
                             JsonNode root = jsonMapper.readTree(response.body());
                             return root.path("choices").get(0).path("message").path("content").asText();
                         } catch (Exception e) {
-                            throw new RuntimeException("Failed to parse response", e);
+                            throw new GenerationException("Failed to parse response", e);
                         }
                     });
         } catch (Exception e) {
@@ -183,7 +198,7 @@ public class LLMAdapter implements LanguageModelAdapter {
         String apiKey;
         String apiUrl = DEFAULT_API_URL;
         String model = DEFAULT_MODEL;
-        double temperature = DEFAULT_TEMPERATURE;
+        Double temperature = DEFAULT_TEMPERATURE;
         Integer maxTokens = DEFAULT_MAX_TOKENS;
     }
 }
