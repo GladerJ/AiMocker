@@ -8,7 +8,9 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import top.mygld.aimocker.exception.AiMockerException;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
-import java.io.IOException;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
 
 /**
  * JSON serialization utility using Jackson.
@@ -64,4 +66,35 @@ public class JsonUtil {
     public static ObjectMapper getMapper() {
         return MAPPER;
     }
+
+    public static void writeJson(String filePath, Object object) {
+        filePath = PathUtil.resolve(filePath);
+
+        File file = new File(filePath);
+
+        File parentDir = file.getParentFile();
+        if (parentDir != null && !parentDir.exists()) {
+            boolean created = parentDir.mkdirs();
+            if (!created) {
+                throw new RuntimeException("Failed to create parent directory: " + parentDir);
+            }
+        }
+        try (Writer writer = new OutputStreamWriter(
+                new FileOutputStream(filePath), StandardCharsets.UTF_8)) {
+            MAPPER.writeValue(writer, object);
+        } catch (IOException e) {
+            throw new RuntimeException("Write JSON to file failed: " + filePath, e);
+        }
+    }
+
+    public static <T> T readJson(String filePath, Class<T> clazz) {
+        filePath = PathUtil.resolve(filePath);
+
+        try (Reader reader = new InputStreamReader(new FileInputStream(filePath), StandardCharsets.UTF_8)) {
+            return MAPPER.readValue(reader, clazz);
+        } catch (IOException e) {
+            throw new RuntimeException("Read JSON from file failed: " + filePath, e);
+        }
+    }
+
 }

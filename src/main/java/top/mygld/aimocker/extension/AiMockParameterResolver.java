@@ -40,7 +40,8 @@ public class AiMockParameterResolver implements ParameterResolver {
                     parameterContext.getParameter().getType(),
                     parameterContext.getParameter().getParameterizedType(),
                     annotation.value(),
-                    annotation.count()
+                    annotation.count(),
+                    annotation.cache()
             );
         } catch (Exception e) {
             throw new ParameterResolutionException("Failed to generate mock data for parameter: "

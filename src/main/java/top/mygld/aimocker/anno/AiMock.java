@@ -1,7 +1,5 @@
 package top.mygld.aimocker.anno;
 
-import top.mygld.aimocker.enums.CacheStrategy;
-
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -62,24 +60,8 @@ public @interface AiMock {
 
 
     /**
-     * Cache Strategy for this framework.
-     *
-     * @return the cache strategy, default is AUTO.
-     */
-    CacheStrategy cache() default CacheStrategy.AUTO;
-
-    /**
-     * The seed for random.
-     *
-     * @return default is -1, the real random.
-     */
-    long seed() default -1;
-
-    /**
-     * Cache time.
-     *
-     * @return default is 86400.
+     * Use cache or not.
      */
 
-    long ttl() default 86400;
+    boolean cache() default false;
 }

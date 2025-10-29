@@ -51,7 +51,8 @@ public class AiMockFieldInjector implements TestInstancePostProcessor {
                 field.getType(),
                 field.getGenericType(),
                 annotation.value(),
-                annotation.count()
+                annotation.count(),
+                annotation.cache()
         );
 
         field.set(testInstance, value);
