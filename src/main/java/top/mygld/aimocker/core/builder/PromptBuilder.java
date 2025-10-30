@@ -2,6 +2,7 @@ package top.mygld.aimocker.core.builder;
 
 import java.lang.reflect.Field;
 import java.util.Collection;
+import java.util.Collections;
 
 public class PromptBuilder {
 
@@ -28,7 +29,7 @@ public class PromptBuilder {
 
     private static void buildFields(Class<?> clazz, StringBuilder builder, int indent) {
         Field[] fields = clazz.getDeclaredFields();
-        String prefix = "  ".repeat(indent);
+        String prefix = String.join("", Collections.nCopies(indent, "  "));
 
         for (Field field : fields) {
             Class<?> type = field.getType();

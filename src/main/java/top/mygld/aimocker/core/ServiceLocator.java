@@ -2,6 +2,7 @@ package top.mygld.aimocker.core;
 
 import top.mygld.aimocker.adapter.impl.LanguageModelAdapter;
 
+import java.util.Iterator;
 import java.util.ServiceLoader;
 
 /**
@@ -11,11 +12,17 @@ public final class ServiceLocator {
     private ServiceLocator() {}
 
     public static LanguageModelAdapter loadAdapter() {
-        return ServiceLoader.load(LanguageModelAdapter.class)
-                .findFirst()
-                .orElseThrow(() -> new IllegalStateException(
-                        "No LanguageModelAdapter implementation found on the classpath. " +
-                                "Please add an adapter dependency, e.g., 'aimocker-langchain4j-adapter'."
-                ));
+        ServiceLoader<LanguageModelAdapter> locator = ServiceLoader.load(LanguageModelAdapter.class);
+        Iterator<LanguageModelAdapter> iterator = locator.iterator();
+
+        if(iterator.hasNext()) {
+            return iterator.next();
+        }
+
+        throw new IllegalStateException(
+                "No LanguageModelAdapter implementation found on the classpath. " +
+                        "Please add an adapter dependency, e.g., 'aimocker-langchain4j-adapter'."
+        );
     }
+
 }
