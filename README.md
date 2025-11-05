@@ -1,173 +1,223 @@
-# AiMocker — 自由 AI 驱动的智能 Mock 测试框架
+# AiMocker
 
-## 1. 背景
-
-在传统 Java 测试中，已有一些 Mock 框架可以生成数据，但存在明显局限：
-
-- 数据随机：生成的 POJO 数据大多随机，难以覆盖特定场景
-- 规则繁琐：要生成精准数据，必须手动设定条件和约束
-- 维护成本高：复杂场景下规则难以管理
+[![Readme 中文](https://img.shields.io/badge/Readme-%E4%B8%AD%E6%96%87-blue)](README_CN.md)[![img](https://jitpack.io/v/GladerJ/AiMocker.svg)](https://jitpack.io/#GladerJ/AiMocker)[![License](https://img.shields.io/badge/license-Apache%202-blue.svg)](https://github.com/GladerJ/AiMocker/blob/master/LICENSE)
 
 ------
 
-## 2. AiMocker 的价值
+### Overview
 
-AiMocker 通过 AI 自动生成测试数据，解决传统 Mock 框架的痛点：
+AiMocker is an AI-powered test data mocking framework that integrates seamlessly with JUnit 5. It leverages AI APIs to generate realistic POJO (Plain Old Java Object) test data, significantly reducing the manual effort required for test data preparation.
 
-- 自然语言描述场景：一句话即可描述所需对象
-- 精准生成 POJO 对象：生成数据严格遵循描述，避免随机性
-- 轻量级、易用：基于 JUnit 5，开箱即可使用
-- 自动注入：通过 `@AiMock` 注解直接注入测试方法参数
-- 自由接入任意大模型：不绑定特定 AI，支持自定义 Adapter，可接入 OpenAI、SiliconFlow、LangChain 等各种 AI 模型
+### ✨ Key Features
 
-------
+- 🤖 **AI-Powered Data Generation**: Automatically generates realistic test data using AI models
+- 🚀 **Async Processing**: Uses CompletableFuture for concurrent API calls to improve performance
+- 💾 **Smart Caching**: Local hash-based caching in `~/.aimocker` directory to minimize token usage
+- 📦 **Flexible Data Types**: Supports single objects, Lists, and Arrays
+- 🔧 **Easy Configuration**: Simple YAML/Properties configuration
+- 🎯 **JUnit 5 Integration**: Seamless integration with JUnit 5 testing framework
+- 🌐 **Multi-Provider Support**: Compatible with OpenAI-compatible APIs (OpenAI, SiliconFlow, etc.)
 
-## 3. 核心功能
+### 📦 Installation
 
-### 3.1 自动生成 POJO 数据
+#### Maven
 
-```java
-@Test
-void testUser(@AiMock("一个来自北京、名字叫李明、年龄28岁的VIP用户") User vipUser) {
-    System.out.println(vipUser);
-}
-```
-
-- 执行时，`vipUser` 自动被填充为符合描述的对象
-- 无需手动设置字段，也不用编写复杂规则
-
-### 3.2 JUnit 5 扩展
-
-- 内置 `AiMockerExtension` 实现 `ParameterResolver`
-- 可通过 `@ExtendWith(AiMockerExtension.class)` 显式注册
-- 可通过 `META-INF/services` 自动注册 Extension（命令行运行生效）
-
-### 3.3 灵活适配 AI 模型
-
-- 提供 `LanguageModelAdapter` SPI
-- 可实现不同 AI 模型适配器
-- 用户可自定义 Adapter，接入任意大模型生成业务场景数据
-
-------
-
-## 4. 使用场景
-
-- 单元测试：快速生成复杂对象
-- 接口/集成测试：模拟真实业务场景数据
-- 数据驱动测试：快速覆盖多样化场景
-
-------
-
-## 5. 优势对比
-
-| 传统 Mock 框架   | AiMocker                       |
-| ---------------- | ------------------------------ |
-| 数据随机、不可控 | 精准生成符合自然语言描述的对象 |
-| 必须手动设定规则 | 只需自然语言描述场景即可       |
-| 维护成本高       | 低维护、直接注入测试方法参数   |
-
-------
-
-## 6. 安装与使用
-
-1. 本地安装：
-
-```bash
-mvn clean install
-```
-
-2. 添加依赖（当前仅为测试，未上传仓库，建议手动下载 jar 包复制到本地仓库测试）：
+Add the JitPack repository and dependency to your `pom.xml`:
 
 ```xml
-<dependency>
-    <groupId>top.mygld.aimocker</groupId>
-    <artifactId>aimocker</artifactId>
-    <version>1.0-SNAPSHOT</version>
-</dependency>
+<repositories>
+    <repository>
+        <id>jitpack.io</id>
+        <url>https://jitpack.io</url>
+    </repository>
+</repositories>
+
+<dependencies>
+    <dependency>
+        <groupId>com.github.GladerJ</groupId>
+        <artifactId>AiMocker</artifactId>
+        <version>1.0.0</version>
+        <scope>test</scope>
+    </dependency>
+    
+    <!-- For non-Spring Boot projects, add JUnit 5 manually -->
+    <dependency>
+        <groupId>org.junit.jupiter</groupId>
+        <artifactId>junit-jupiter</artifactId>
+        <version>5.10.0</version>
+        <scope>test</scope>
+    </dependency>
+</dependencies>
 ```
 
-3. 编写测试方法，使用 `@AiMock` 注解即可：
+> **Note**: Spring Boot projects already include JUnit 5, so you only need the AiMocker dependency.
+
+#### Gradle, SBT, Leiningen
+
+For other build tools (Gradle, Gradle Kotlin DSL, SBT, Leiningen), please refer to [JitPack documentation](https://jitpack.io/#GladerJ/AiMocker/1.0.0)
+
+### ⚙️ Configuration
+
+Create a configuration file in `test/resources/`:
+
+**application.yml** (Recommended):
+
+```yaml
+aimocker:
+  llm:
+    api-key: your-api-key-here
+    api-url: https://api.openai.com/v1/chat/completions
+    model: gpt-3.5-turbo
+    temperature: 1.0
+    max-tokens: 2000
+```
+
+**application.properties**:
+
+```properties
+aimocker.llm.api-key=your-api-key-here
+aimocker.llm.api-url=https://api.openai.com/v1/chat/completions
+aimocker.llm.model=gpt-3.5-turbo
+aimocker.llm.temperature=1.0
+aimocker.llm.max-tokens=2000
+```
+
+> **Configuration Priority**: `application.properties` > `application.yml` > `application.yaml`
+
+### 🚀 Quick Start
+
+#### Basic Usage
+
+```java
+import org.junit.jupiter.api.Test;
+import top.mygld.aimocker.anno.AiMock;
+import top.mygld.aimocker.anno.AiMockTest;
+
+@AiMockTest
+public class UserServiceTest {
+    
+    // Field injection
+    @AiMock("Generate a mock user with realistic data")
+    private User user;
+    
+    @AiMock("Generate a mock animal with name and species")
+    private Animal animal;
+    
+    @Test
+    void testFieldInjection() {
+        System.out.println("User: " + user);
+        System.out.println("Animal: " + animal);
+    }
+}
+```
+
+#### Parameter Injection
 
 ```java
 @Test
-void testUser(@AiMock("一个中国北京的VIP用户，名字叫李明") User user) {
-    System.out.println(user);
+void testParameterInjection(
+    @AiMock(value = "Generate random user data with various countries", cache = true) 
+    User user) {
+    
+    assertNotNull(user);
+    System.out.println("Generated user: " + user);
 }
 ```
 
-## 7. 当前所支持的功能
-
-当前处于该框架的开发初级阶段，目前实现的功能有限，具体如下：
-
-（1）目前内嵌基于硅基流动官方接口的 qwen 模型，仅需在环境变量中添加 `SILICONFLOW_API_KEY=密钥` 即可，这里为了框架初级测试，仅提供了该接口。
-
-（2）AiMocker 提供 **SPI（Service Provider Interface）机制**，允许用户自由接入其他任意大模型或其他第三方库，例如：
+#### List/Array Support
 
 ```java
-public class MyCustomAdapter implements LanguageModelAdapter {
-    @Override
-    public <T> T generate(Class<T> clazz, String scenario) {
-        // 调用第三方库或自定义 AI 接口生成对象
-    }
+@Test
+void testListGeneration(
+    @AiMock(value = "Generate diverse user data from different countries", 
+            count = 5, 
+            cache = true) 
+    List<User> users) {
+    
+    assertEquals(5, users.size());
+    users.forEach(System.out::println);
+}
+
+@Test
+void testArrayGeneration(
+    @AiMock(value = "Generate random international users", count = 10) 
+    ArrayList<User> users) {
+    
+    assertEquals(10, users.size());
 }
 ```
 
-（3）注册自定义 Adapter
+### 📝 Annotation Reference
 
-在项目的 `src/main/resources/META-INF/services/` 目录下创建文件：
+#### @AiMockTest
 
-```
-top.mygld.aimocker.adapter.impl.LanguageModelAdapter
-```
+- **Target**: Class level
+- **Purpose**: Enables AiMocker JUnit extension for the test class
 
-文件内容填写自定义实现类的全路径，例如：
+#### @AiMock
 
-```
-com.example.ai.MyCustomAdapter
-```
+- **Target**: Field or Parameter
+- Attributes
+  - `value`: Prompt description for AI data generation (required)
+  - `count`: Number of items to generate for collections (default: 1)
+  - `cache`: Enable local caching (default: false)
 
-框架启动时会通过 **Java ServiceLoader** 自动加载该 Adapter，无需手动注入。
+### 🔄 How It Works
 
-## 8. 具体使用方法
+1. **Initialization**: AiMocker reads configuration from `application.yml/properties`
+2. **Annotation Processing**: Detects `@AiMock` annotations on fields and parameters
+3. **Cache Check**: If caching is enabled, checks local cache first
+4. **AI Generation**: Calls AI API with the provided prompt and target class structure
+5. **Async Processing**: Uses CompletableFuture for parallel API calls
+6. **Data Injection**: Deserializes JSON response and injects into test variables
+7. **Cache Storage**: Saves generated data to `~/.aimocker/` using hash-based keys
 
-例如我现在有一个 `User` 类：
+### 🌟 Best Practices
 
-```java
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
-public class User {
-    private String name;
-    private int age;
-    private String email;
-    private String city;
-    private String gender;
-    private String status;
-    private String phoneNumber;
-    private String occupation;
-}
-```
+1. **Use Descriptive Prompts**: Provide clear instructions for better data quality
 
-接下来在测试类中添加注解 `@ExtendWith(AiMockParameterResolver.class)`，并在为生成 `Mock` 数据的对象添加 `@AiMock` 注解：
+   ```java
+   @AiMock("Generate a user with age between 20-60, from Asian countries")
+   ```
 
-```java
-@SpringBootTest
-@ExtendWith(AiMockParameterResolver.class)
-class DemoApplicationTests {
-    @Test
-    void test4(@AiMock("随机生成所有成员，每一个数据都不能为空，必须符合规范") User user){
-        System.out.println(user);
-    }
+2. **Enable Caching for Repeated Tests**: Reduce API calls and token usage
 
-    @Test
-    void testListAiMockUser(@AiMock(value = "数据自拟，答案随机一点，不要固定，都不能为空",count = 5) List<User> users) {
-        System.out.println(users);
-    }
-}
-```
+   ```java
+   @AiMock(value = "...", cache = true)
+   ```
 
-运行单元测试：
+3. **Specify Variety in Prompts**: Get diverse test data
 
-<img src="https://images.mygld.top/file/1761234782648_image.png" alt="image.png" width=100% />
+   ```java
+   @AiMock("Generate users from various countries with different occupations")
+   ```
 
-!<img src="https://images.mygld.top/file/1761318740573_image.png" alt="image.png" width=100% />
+4. **Appropriate Count Values**: Balance between test coverage and performance
+
+   ```java
+   @AiMock(value = "...", count = 10) // For boundary testing
+   ```
+
+### 🛠️ Supported AI Providers
+
+AiMocker supports any OpenAI-compatible API:
+
+- OpenAI (GPT-3.5, GPT-4)
+- Azure OpenAI
+- SiliconFlow
+- Anthropic Claude (with compatible proxy)
+- Local models via LM Studio, Ollama, etc.
+
+### 📄 License
+
+This project is licensed under the Apache License 2.0 - see the [LICENSE](https://github.com/GladerJ/AiMocker/blob/master/LICENSE) file for details.
+
+### 🤝 Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+### 📧 Contact
+
+- GitHub: [@GladerJ](https://github.com/GladerJ)
+- Issues: [GitHub Issues](https://github.com/GladerJ/AiMocker/issues)
+
