@@ -5,7 +5,7 @@
                              https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.github.GladerJ</groupId>
+    <groupId>top.mygld.aimocker</groupId>
     <artifactId>AiMocker</artifactId>
     <version>1.0.0</version>
     <packaging>jar</packaging>
