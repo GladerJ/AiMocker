@@ -1,8 +1,7 @@
 # AiMocker
 
-[![Readme 中文](https://img.shields.io/badge/Readme-%E4%B8%AD%E6%96%87-blue)](README_CN.md)[![img](https://jitpack.io/v/GladerJ/AiMocker.svg)](https://jitpack.io/#GladerJ/AiMocker)[![License](https://img.shields.io/badge/license-Apache%202-blue.svg)](https://github.com/GladerJ/AiMocker/blob/master/LICENSE)
+[![Readme 中文](https://img.shields.io/badge/Readme-%E4%B8%AD%E6%96%87-blue)](README_CN.md) [![img](https://jitpack.io/v/GladerJ/AiMocker.svg)](https://jitpack.io/#GladerJ/AiMocker) [![License](https://img.shields.io/badge/license-Apache%202-blue.svg)](https://github.com/GladerJ/AiMocker/blob/master/LICENSE)
 
-------
 
 ### Overview
 
@@ -220,4 +219,3 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 - GitHub: [@GladerJ](https://github.com/GladerJ)
 - Issues: [GitHub Issues](https://github.com/GladerJ/AiMocker/issues)
-
