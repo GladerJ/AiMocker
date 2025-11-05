@@ -1,10 +1,8 @@
 package top.mygld.aimocker;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import top.mygld.aimocker.core.builder.PromptBuilder;
 import top.mygld.aimocker.core.ServiceLocator;
-import top.mygld.aimocker.adapter.impl.LanguageModelAdapter;
+import top.mygld.aimocker.adapter.LanguageModelAdapter;
 import top.mygld.aimocker.util.JsonUtil;
 
 import java.util.concurrent.CompletableFuture;

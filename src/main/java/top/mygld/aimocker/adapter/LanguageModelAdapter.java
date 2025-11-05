@@ -1,4 +1,4 @@
-package top.mygld.aimocker.adapter.impl;
+package top.mygld.aimocker.adapter;
 
 import java.util.concurrent.CompletableFuture;
 

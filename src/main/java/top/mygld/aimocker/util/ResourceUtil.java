@@ -1,8 +1,6 @@
 package top.mygld.aimocker.util;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import org.yaml.snakeyaml.Yaml;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -18,7 +16,6 @@ import java.util.*;
  * This class provides static methods to read resource files via the class loader and return either an InputStream
  * or parsed objects.
  * </p>
- *
  *
  * <p>
  * This utility is suitable for projects running in IDE or packaged in a JAR.
@@ -44,68 +41,75 @@ public class ResourceUtil {
      */
     public static InputStream getStream(String fileName) {
         ClassLoader classLoader = ResourceUtil.class.getClassLoader();
-        InputStream stream = classLoader.getResourceAsStream(fileName);
-        return stream;
+        return classLoader.getResourceAsStream(fileName);
     }
 
-    public static Map<String,String> getProperties(String fileName) throws IOException {
+    public static Map<String, String> getProperties(String fileName) throws IOException {
         InputStream is = getStream(fileName);
-
-        if(is == null) return null;
+        if (is == null) return null;
 
         Properties prop = new Properties();
         try (InputStream input = is) {
             prop.load(input);
         }
 
-        Map<String,String> map = new HashMap<>();
+        Map<String, String> map = new HashMap<>();
         for (String name : prop.stringPropertyNames()) {
             map.put(name, prop.getProperty(name));
         }
-
         return map;
     }
 
     public static Map<String, String> getYaml(String fileName, String rootPath) throws IOException {
         InputStream is = getStream(fileName);
         if (is == null) return null;
-        ObjectMapper yamlMapper = new ObjectMapper(new YAMLFactory());
-        JsonNode root = yamlMapper.readTree(is);
+
+        Yaml yaml = new Yaml();
+        Map<String, Object> yamlData = yaml.load(is);
+
+        if (yamlData == null) return null;
+
+        // 如果指定了 rootPath，先导航到该节点
+        Object root = yamlData;
         if (rootPath != null && !rootPath.isEmpty()) {
             String[] parts = rootPath.split("\\.");
             for (String part : parts) {
-                root = root.path(part);
-                if (root.isMissingNode()) {
+                if (root instanceof Map) {
+                    root = ((Map<?, ?>) root).get(part);
+                    if (root == null) {
+                        return null;
+                    }
+                } else {
                     return null;
                 }
             }
         }
+
         Map<String, String> map = new HashMap<>();
         String prefix = rootPath != null && !rootPath.isEmpty() ? rootPath : "";
         parseYamlNode(prefix, root, map);
         return map;
     }
 
-    private static void parseYamlNode(String prefix, JsonNode node, Map<String, String> map) {
-        if (node.isObject()) {
-            node.fieldNames().forEachRemaining(field -> {
-                JsonNode child = node.get(field);
-                String key = prefix.isEmpty() ? field : prefix + "." + field;
-                parseYamlNode(key, child, map);
+    private static void parseYamlNode(String prefix, Object node, Map<String, String> map) {
+        if (node instanceof Map) {
+            Map<?, ?> mapNode = (Map<?, ?>) node;
+            mapNode.forEach((key, value) -> {
+                String keyStr = prefix.isEmpty() ? key.toString() : prefix + "." + key;
+                parseYamlNode(keyStr, value, map);
             });
-        } else if (node.isArray()) {
-            for (int i = 0; i < node.size(); i++) {
+        } else if (node instanceof List) {
+            List<?> listNode = (List<?>) node;
+            for (int i = 0; i < listNode.size(); i++) {
                 String key = prefix + "[" + i + "]";
-                parseYamlNode(key, node.get(i), map);
+                parseYamlNode(key, listNode.get(i), map);
             }
-        } else if (node.isValueNode()) {
-            map.put(prefix, node.asText());
+        } else if (node != null) {
+            map.put(prefix, node.toString());
         }
     }
 
-
-
     public static void main(String[] args) throws IOException {
-        System.out.println(getYaml("application.yml","aimocker"));
+        System.out.println(getYaml("application.yml", "aimocker"));
     }
 }

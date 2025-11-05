@@ -45,7 +45,7 @@ public class JUnitExtensionTest {
     @Test
     void testArrayAiMockUser(
             @AiMock(value = "生成随机数据，要求非常随机，不能只固定一个或一种，随机一点，各个国家的城市都有"
-                    ,count = 6,cache = true) User[] users) {
+                    ,count = 5,cache = true) User[] users) {
         System.out.println(Arrays.toString(users));
     }
 

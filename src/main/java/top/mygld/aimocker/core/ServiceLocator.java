@@ -1,6 +1,6 @@
 package top.mygld.aimocker.core;
 
-import top.mygld.aimocker.adapter.impl.LanguageModelAdapter;
+import top.mygld.aimocker.adapter.LanguageModelAdapter;
 
 import java.util.Iterator;
 import java.util.ServiceLoader;

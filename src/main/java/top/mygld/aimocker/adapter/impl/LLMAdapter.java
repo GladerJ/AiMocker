@@ -1,8 +1,9 @@
-package top.mygld.aimocker.adapter;
+package top.mygld.aimocker.adapter.impl;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import top.mygld.aimocker.adapter.impl.LanguageModelAdapter;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import top.mygld.aimocker.adapter.LanguageModelAdapter;
 import top.mygld.aimocker.exception.ConfigException;
 import top.mygld.aimocker.exception.GenerationException;
 import top.mygld.aimocker.util.ResourceUtil;
@@ -27,7 +28,7 @@ public class LLMAdapter implements LanguageModelAdapter {
     private final double temperature;
     private final Integer maxTokens;
 
-    private final ObjectMapper jsonMapper = new ObjectMapper();
+    private final Gson gson = new Gson();
 
     public LLMAdapter() {
         Config config = loadConfig();
@@ -105,14 +106,16 @@ public class LLMAdapter implements LanguageModelAdapter {
                 messages.add(message);
                 body.put("messages", messages);
 
-                String jsonBody = jsonMapper.writeValueAsString(body);
+                String jsonBody = gson.toJson(body);
 
-                // 手动设置 Header
                 HttpURLConnectionWithHeader conn = new HttpURLConnectionWithHeader(apiUrl, apiKey);
                 String response = conn.post(jsonBody);
 
-                JsonNode root = jsonMapper.readTree(response);
-                return root.path("choices").get(0).path("message").path("content").asText();
+                JsonObject root = JsonParser.parseString(response).getAsJsonObject();
+                return  root.getAsJsonArray("choices")
+                        .get(0).getAsJsonObject()
+                        .getAsJsonObject("message")
+                        .get("content").getAsString();
 
             } catch (Exception e) {
                 throw new GenerationException("Failed to generate response", e);

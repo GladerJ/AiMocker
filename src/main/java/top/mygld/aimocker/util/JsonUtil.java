@@ -1,39 +1,40 @@
 package top.mygld.aimocker.util;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
+import com.google.gson.*;
+import com.google.gson.reflect.TypeToken;
+import top.mygld.aimocker.adapter.impl.InstantAdapter;
+import top.mygld.aimocker.adapter.impl.LocalDateAdapter;
+import top.mygld.aimocker.adapter.impl.LocalDateTimeAdapter;
+import top.mygld.aimocker.adapter.impl.LocalTimeAdapter;
 import top.mygld.aimocker.exception.AiMockerException;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Path;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 /**
  * JSON serialization utility using Jackson.
  */
 public class JsonUtil {
 
-    private static final ObjectMapper MAPPER = new ObjectMapper();
-
-    static {
-        MAPPER.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
-        MAPPER.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
-        MAPPER.enable(SerializationFeature.INDENT_OUTPUT);
-        MAPPER.registerModule(new JavaTimeModule());
-        MAPPER.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-    }
+    private static final Gson GSON = new GsonBuilder()
+            .setPrettyPrinting()
+            .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter())
+            .registerTypeAdapter(LocalDate.class, new LocalDateAdapter())
+            .registerTypeAdapter(LocalTime.class, new LocalTimeAdapter())
+            .registerTypeAdapter(Instant.class, new InstantAdapter())
+            .create();
 
     /**
      * Object to JSON string.
      */
     public static String toJson(Object obj) {
         try {
-            return MAPPER.writeValueAsString(obj);
-        } catch (JsonProcessingException e) {
+            return GSON.toJson(obj);
+        } catch (Exception e) {
             throw new AiMockerException("Failed to serialize object to JSON", e);
         }
     }
@@ -43,8 +44,8 @@ public class JsonUtil {
      */
     public static <T> T fromJson(String json, Class<T> clazz) {
         try {
-            return MAPPER.readValue(json, clazz);
-        } catch (IOException e) {
+            return GSON.fromJson(json, clazz);
+        } catch (Exception e) {
             throw new AiMockerException("Failed to deserialize JSON to " + clazz.getName(), e);
         }
     }
@@ -52,10 +53,10 @@ public class JsonUtil {
     /**
      * JSON string to generic type (for List<User>, etc.).
      */
-    public static <T> T fromJson(String json, TypeReference<T> typeRef) {
+    public static <T> T fromJson(String json, TypeToken<T> typeToken) {
         try {
-            return MAPPER.readValue(json, typeRef);
-        } catch (IOException e) {
+            return GSON.fromJson(json, typeToken);
+        } catch (Exception e) {
             throw new AiMockerException("Failed to deserialize JSON", e);
         }
     }
@@ -63,8 +64,8 @@ public class JsonUtil {
     /**
      * Get the ObjectMapper instance for advanced usage.
      */
-    public static ObjectMapper getMapper() {
-        return MAPPER;
+    public static Gson getGSON() {
+        return GSON;
     }
 
     public static void writeJson(String filePath, Object object) {
@@ -81,7 +82,7 @@ public class JsonUtil {
         }
         try (Writer writer = new OutputStreamWriter(
                 new FileOutputStream(filePath), StandardCharsets.UTF_8)) {
-            MAPPER.writeValue(writer, object);
+            writer.write(GSON.toJson(object));
         } catch (IOException e) {
             throw new RuntimeException("Write JSON to file failed: " + filePath, e);
         }
@@ -91,10 +92,11 @@ public class JsonUtil {
         filePath = PathUtil.resolve(filePath);
 
         try (Reader reader = new InputStreamReader(new FileInputStream(filePath), StandardCharsets.UTF_8)) {
-            return MAPPER.readValue(reader, clazz);
+            return GSON.fromJson(reader, clazz);
         } catch (IOException e) {
             throw new RuntimeException("Read JSON from file failed: " + filePath, e);
         }
     }
+
 
 }
