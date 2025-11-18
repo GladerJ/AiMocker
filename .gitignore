@@ -37,8 +37,3 @@ build/
 
 ### Mac OS ###
 .DS_Store
-
-# 忽略敏感文件（配置文件）
-/src/test/resources/application.yml
-/src/test/resources/application.properties
-/src/test/resources/application.yaml

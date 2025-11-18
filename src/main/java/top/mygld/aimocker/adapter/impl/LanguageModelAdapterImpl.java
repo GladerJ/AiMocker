@@ -15,10 +15,8 @@ import java.util.concurrent.CompletableFuture;
  * Default Language Model Adapter implementation.
  * JDK 1.8 compatible version (uses HttpURLConnection + CompletableFuture)
  */
-public class LLMAdapter implements LanguageModelAdapter {
+public class LanguageModelAdapterImpl implements LanguageModelAdapter {
 
-    private static final String DEFAULT_API_URL = "https://api.siliconflow.cn/v1/chat/completions";
-    private static final String DEFAULT_MODEL = "Qwen/Qwen2.5-7B-Instruct";
     private static final double DEFAULT_TEMPERATURE = 1.0;
     private static final int DEFAULT_MAX_TOKENS = 2000;
 
@@ -30,16 +28,14 @@ public class LLMAdapter implements LanguageModelAdapter {
 
     private final Gson gson = new Gson();
 
-    public LLMAdapter() {
+    public LanguageModelAdapterImpl() {
         Config config = loadConfig();
-        String envApiKey = System.getenv("SILICONFLOW_API_KEY");
-        this.apiKey = (envApiKey != null && !envApiKey.trim().isEmpty())
-                ? envApiKey
-                : config.apiKey;
+        this.apiKey = config.apiKey;
 
         if (this.apiKey == null || this.apiKey.trim().isEmpty()) {
             throw new IllegalStateException(
-                    "SILICONFLOW_API_KEY not found. Please set environment variable or configure in application.yml"
+                    "Missing API key configuration. Please configure it in one of the following files: " +
+                            "aimocker.properties, aimocker.yml, or aimocker.yaml."
             );
         }
 
@@ -52,21 +48,21 @@ public class LLMAdapter implements LanguageModelAdapter {
     private Config loadConfig() {
         Config config = new Config();
         try {
-            Map<String, String> map = ResourceUtil.getProperties("application.properties");
-            if (map == null) map = ResourceUtil.getYaml("application.yml", "aimocker");
-            if (map == null) map = ResourceUtil.getYaml("application.yaml", "aimocker");
+            Map<String, String> map = ResourceUtil.getProperties("aimocker.properties");
+            if (map == null) map = ResourceUtil.getYaml("aimocker.yml", "llm");
+            if (map == null) map = ResourceUtil.getYaml("aimocker.yaml", "llm");
 
             if (map != null) {
-                String apiKey = map.get("aimocker.llm.api-key");
+                String apiKey = map.get("llm.api-key");
                 if (apiKey != null && !apiKey.trim().isEmpty()) config.apiKey = apiKey.trim();
 
-                String apiUrl = map.get("aimocker.llm.api-url");
+                String apiUrl = map.get("llm.api-url");
                 if (apiUrl != null && !apiUrl.trim().isEmpty()) config.apiUrl = apiUrl.trim();
 
-                String model = map.get("aimocker.llm.model");
+                String model = map.get("llm.model");
                 if (model != null && !model.trim().isEmpty()) config.model = model.trim();
 
-                String temperature = map.get("aimocker.llm.temperature");
+                String temperature = map.get("llm.temperature");
                 if (temperature != null && !temperature.trim().isEmpty()) {
                     try {
                         config.temperature = Double.parseDouble(temperature.trim());
@@ -75,7 +71,7 @@ public class LLMAdapter implements LanguageModelAdapter {
                     }
                 }
 
-                String maxTokens = map.get("aimocker.llm.max-tokens");
+                String maxTokens = map.get("llm.max-tokens");
                 if (maxTokens != null && !maxTokens.trim().isEmpty()) {
                     try {
                         config.maxTokens = Integer.parseInt(maxTokens.trim());
@@ -162,9 +158,20 @@ public class LLMAdapter implements LanguageModelAdapter {
 
     private static class Config {
         String apiKey;
-        String apiUrl = DEFAULT_API_URL;
-        String model = DEFAULT_MODEL;
+        String apiUrl;
+        String model;
         Double temperature = DEFAULT_TEMPERATURE;
         Integer maxTokens = DEFAULT_MAX_TOKENS;
+
+        @Override
+        public String toString() {
+            return "Config{" +
+                    "apiKey='" + apiKey + '\'' +
+                    ", apiUrl='" + apiUrl + '\'' +
+                    ", model='" + model + '\'' +
+                    ", temperature=" + temperature +
+                    ", maxTokens=" + maxTokens +
+                    '}';
+        }
     }
 }

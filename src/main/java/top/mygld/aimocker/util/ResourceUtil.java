@@ -5,6 +5,8 @@ import org.yaml.snakeyaml.Yaml;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * <p>
@@ -55,9 +57,9 @@ public class ResourceUtil {
 
         Map<String, String> map = new HashMap<>();
         for (String name : prop.stringPropertyNames()) {
-            map.put(name, prop.getProperty(name));
+            map.put(name, resolveValue(prop.getProperty(name)));
         }
-        return map;
+        return map.isEmpty() ? null : map;
     }
 
     public static Map<String, String> getYaml(String fileName, String rootPath) throws IOException {
@@ -69,7 +71,6 @@ public class ResourceUtil {
 
         if (yamlData == null) return null;
 
-        // 如果指定了 rootPath，先导航到该节点
         Object root = yamlData;
         if (rootPath != null && !rootPath.isEmpty()) {
             String[] parts = rootPath.split("\\.");
@@ -88,7 +89,7 @@ public class ResourceUtil {
         Map<String, String> map = new HashMap<>();
         String prefix = rootPath != null && !rootPath.isEmpty() ? rootPath : "";
         parseYamlNode(prefix, root, map);
-        return map;
+        return map.isEmpty() ? null : map;
     }
 
     private static void parseYamlNode(String prefix, Object node, Map<String, String> map) {
@@ -105,11 +106,20 @@ public class ResourceUtil {
                 parseYamlNode(key, listNode.get(i), map);
             }
         } else if (node != null) {
-            map.put(prefix, node.toString());
+            map.put(prefix, resolveValue(node.toString()));
         }
     }
 
+    private static String resolveValue(String value) {
+        Pattern pattern = Pattern.compile("^\\$\\{(.+?)\\}$");
+        Matcher matcher = pattern.matcher(value);
+        if(matcher.matches()){
+            return System.getenv(matcher.group(1));
+        }
+        return value;
+    }
+
     public static void main(String[] args) throws IOException {
-        System.out.println(getYaml("application.yml", "aimocker"));
+         System.out.println(getYaml("aimocker.yml", "llm"));
     }
 }

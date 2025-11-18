@@ -36,7 +36,7 @@ Add the JitPack repository and dependency to your `pom.xml`:
     <dependency>
         <groupId>com.github.GladerJ</groupId>
         <artifactId>AiMocker</artifactId>
-        <version>1.0.0</version>
+        <version>tag</version> <!-- Replace with the latest version (e.g. v1.0.1) -->
         <scope>test</scope>
     </dependency>
     
@@ -54,36 +54,37 @@ Add the JitPack repository and dependency to your `pom.xml`:
 
 #### Gradle, SBT, Leiningen
 
-For other build tools (Gradle, Gradle Kotlin DSL, SBT, Leiningen), please refer to [JitPack documentation](https://jitpack.io/#GladerJ/AiMocker/1.0.0)
+For other build tools (Gradle, Gradle Kotlin DSL, SBT, Leiningen), please refer to the JitPack documentation
+.
+But these build tools have not been tested yet — contributions and feedback are welcome.
 
 ### ⚙️ Configuration
 
 Create a configuration file in `test/resources/`:
 
-**application.yml** (Recommended):
+**aimocker.yml** (Recommended):
 
 ```yaml
-aimocker:
-  llm:
-    api-key: your-api-key-here
-    api-url: https://api.openai.com/v1/chat/completions
-    model: gpt-3.5-turbo
-    temperature: 1.0
-    max-tokens: 2000
+llm:
+  api-key: ${OPENAI_API_KEY}
+  api-url: https://api.openai.com/v1/chat/completions
+  model: gpt-3.5-turbo
+  temperature: 1.0
+  max-tokens: 2000
 ```
 
-**application.properties**:
+**aimocker.properties**:
 
 ```properties
-aimocker.llm.api-key=your-api-key-here
-aimocker.llm.api-url=https://api.openai.com/v1/chat/completions
-aimocker.llm.model=gpt-3.5-turbo
-aimocker.llm.temperature=1.0
-aimocker.llm.max-tokens=2000
+llm.api-key = ${OPENAI_API_KEY}
+llm.api-url = https://api.openai.com/v1/chat/completions
+llm.model = gpt-3.5-turbo
+llm.temperature = 1.0
+llm.max-tokens = 2000
 ```
 
-> **Configuration Priority**: `application.properties` > `application.yml` > `application.yaml`
-
+> **Configuration Priority**: `aimocker.properties` > `aimocker.yml` > `aimocker.yaml`
+- It is recommended to set sensitive configurations, such as the API key, as environment variables in the configuration file.
 ### 🚀 Quick Start
 
 #### Basic Usage

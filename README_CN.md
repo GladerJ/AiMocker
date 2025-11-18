@@ -30,7 +30,7 @@ AiMocker 是一个基于 AI 的测试数据模拟框架，与 JUnit 5 无缝集�
     <dependency>
         <groupId>com.github.GladerJ</groupId>
         <artifactId>AiMocker</artifactId>
-        <version>v1.0.0</version>
+        <version>tag</version> <!-- 请替换为最新版本 (例如 v1.0.1) -->
         <scope>test</scope>
     </dependency>
     
@@ -48,36 +48,35 @@ AiMocker 是一个基于 AI 的测试数据模拟框架，与 JUnit 5 无缝集�
 
 #### Gradle、SBT、Leiningen
 
-其他构建工具（Gradle、Gradle Kotlin DSL、SBT、Leiningen）的配置请参考 [JitPack 文档](https://jitpack.io/#GladerJ/AiMocker/1.0.0)
+其他构建工具（Gradle、Gradle Kotlin DSL、SBT、Leiningen）的配置可参考 JitPack 文档，但目前尚未经过测试，欢迎用户尝试并反馈。
 
 ### ⚙️ 配置
 
 在 `test/resources/` 目录下创建配置文件：
 
-**application.yml**（推荐）：
+**aimocker.yml**（推荐）：
 
 ```yaml
-aimocker:
-  llm:
-    api-key: 你的API密钥
-    api-url: https://api.openai.com/v1/chat/completions
-    model: gpt-3.5-turbo
-    temperature: 1.0
-    max-tokens: 2000
+llm:
+  api-key: ${OPENAI_API_KEY}
+  api-url: https://api.openai.com/v1/chat/completions
+  model: gpt-3.5-turbo
+  temperature: 1.0
+  max-tokens: 2000
 ```
 
-**application.properties**：
+**aimocker.properties**：
 
 ```properties
-aimocker.llm.api-key=你的API密钥
-aimocker.llm.api-url=https://api.openai.com/v1/chat/completions
-aimocker.llm.model=gpt-3.5-turbo
-aimocker.llm.temperature=1.0
-aimocker.llm.max-tokens=2000
+llm.api-key = ${OPENAI_API_KEY}
+llm.api-url = https://api.openai.com/v1/chat/completions
+llm.model = gpt-3.5-turbo
+llm.temperature = 1.0
+llm.max-tokens = 2000
 ```
 
-> **配置优先级**：`application.properties` > `application.yml` > `application.yaml`
-
+> **配置优先级**：`aimocker.properties` > `aimocker.yml` > `aimocker.yaml`
+- 建议在配置文件中，将敏感配置（例如 API 密钥）设置为环境变量。
 ### 🚀 快速开始
 
 #### 基础用法

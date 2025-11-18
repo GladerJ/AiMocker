@@ -1,6 +1,10 @@
 package top.mygld.aimocker.pojo;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Date;
 
 /**
  * Test Pojo
@@ -13,6 +17,52 @@ public class User {
     private String city;
     private top.mygld.aimocker.pojo.BackPack backPack;
     private ArrayList<String> nickname;
+    private Date birthday;
+    private LocalDateTime localDateTime;
+    private LocalTime localTime;
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "name='" + name + '\'' +
+                ", age=" + age +
+                ", email='" + email + '\'' +
+                ", city='" + city + '\'' +
+                ", backPack=" + backPack +
+                ", nickname=" + nickname +
+                ", birthday=" + birthday +
+                ", localDateTime=" + localDateTime +
+                ", localTime=" + localTime +
+                ", localDate=" + localDate +
+                '}';
+    }
+
+    public LocalDate getLocalDate() {
+        return localDate;
+    }
+
+    public void setLocalDate(LocalDate localDate) {
+        this.localDate = localDate;
+    }
+
+    public LocalTime getLocalTime() {
+        return localTime;
+    }
+
+    public void setLocalTime(LocalTime localTime) {
+        this.localTime = localTime;
+    }
+
+    private LocalDate localDate;
+
+
+    public LocalDateTime getLocalDateTime() {
+        return localDateTime;
+    }
+
+    public void setLocalDateTime(LocalDateTime localDateTime) {
+        this.localDateTime = localDateTime;
+    }
 
     public ArrayList<String> getNickname() {
         return nickname;
@@ -70,15 +120,11 @@ public class User {
     // ----------- toString -----------
 
 
-    @Override
-    public String toString() {
-        return "User{" +
-                "name='" + name + '\'' +
-                ", age=" + age +
-                ", email='" + email + '\'' +
-                ", city='" + city + '\'' +
-                ", backPack=" + backPack +
-                ", nickname=" + nickname +
-                '}';
+    public Date getBirthday() {
+        return birthday;
+    }
+
+    public void setBirthday(Date birthday) {
+        this.birthday = birthday;
     }
 }
